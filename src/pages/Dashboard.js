@@ -8,20 +8,26 @@ const Dashboard = () => {
     navigate('/');
   };
 
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800">Dashboard</h2>
-          <p className="text-gray-600 mt-1">Welcome back! Here's your business overview</p>
+      <div className="bg-primary p-6 rounded-lg mb-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold text-white">Dashboard</h2>
+            <p className="text-blue-100 mt-1">Welcome back! Here's your business overview</p>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+          >
+            Logout
+          </button>
         </div>
-        <button 
-          onClick={handleLogout}
-          className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md"
-        >
-          Logout
-        </button>
       </div>
 
       {/* Stats Cards */}
@@ -96,19 +102,31 @@ const Dashboard = () => {
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h3 className="text-xl font-semibold mb-4 text-gray-800">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-4">
-            <button className="p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors text-center">
+            <button 
+              onClick={() => handleNavigation('/transactions')}
+              className="p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors text-center"
+            >
               <div className="text-2xl mb-2">➕</div>
               <span className="text-sm font-medium text-blue-700">Add Transaction</span>
             </button>
-            <button className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors text-center">
+            <button 
+              onClick={() => handleNavigation('/reports')}
+              className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors text-center"
+            >
               <div className="text-2xl mb-2">📊</div>
               <span className="text-sm font-medium text-green-700">Generate Report</span>
             </button>
-            <button className="p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors text-center">
+            <button 
+              onClick={() => handleNavigation('/accounts')}
+              className="p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors text-center"
+            >
               <div className="text-2xl mb-2">💳</div>
               <span className="text-sm font-medium text-purple-700">Add Account</span>
             </button>
-            <button className="p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors text-center">
+            <button 
+              onClick={() => handleNavigation('/transactions')}
+              className="p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors text-center"
+            >
               <div className="text-2xl mb-2">📋</div>
               <span className="text-sm font-medium text-orange-700">View Invoices</span>
             </button>
@@ -121,7 +139,12 @@ const Dashboard = () => {
         <div className="p-6 border-b">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold text-gray-800">Recent Transactions</h3>
-            <button className="text-primary hover:text-blue-700 font-medium">View All</button>
+            <button 
+              onClick={() => handleNavigation('/transactions')}
+              className="text-primary hover:text-blue-700 font-medium"
+            >
+              View All
+            </button>
           </div>
         </div>
         <div className="overflow-x-auto">
