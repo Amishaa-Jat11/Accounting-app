@@ -17,20 +17,18 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="flex">
-        {showSidebar && <Sidebar />}
-        <main className={`flex-1 ${showSidebar ? 'p-6' : ''}`}>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/accounts" element={<Accounts />} />
-            <Route path="/transactions" element={<Transactions />} />
-            <Route path="/reports" element={<Reports />} />
-          </Routes>
-        </main>
-      </div>
+      {showSidebar && <Sidebar />}
+      <main className={showSidebar ? 'ml-64 p-6' : ''}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/accounts" element={<Accounts />} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/reports" element={<Reports />} />
+        </Routes>
+      </main>
     </div>
   );
 }

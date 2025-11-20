@@ -12,7 +12,10 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-white shadow-sm h-screen">
+    <aside className="w-64 bg-white shadow-sm h-screen fixed left-0 top-0 overflow-y-auto">
+      <div className="p-4 border-b">
+        <h1 className="text-xl font-bold text-gray-800">💼 Accounting</h1>
+      </div>
       <nav className="p-4">
         <ul className="space-y-2">
           {menuItems.map((item) => (
