@@ -79,15 +79,15 @@ const Accounts = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-blue-600 rounded-xl p-6 text-white">
+      <div className="bg-green-600 rounded-xl p-6 text-white">
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-bold mb-2">Chart of Accounts</h2>
-            <p className="text-blue-100">Manage your business accounts and track financial positions</p>
+            <p className="text-green-100">Manage your business accounts and track financial positions</p>
           </div>
           <button 
             onClick={() => setShowAddModal(true)}
-            className="bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            className="bg-white text-green-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1"
           >
             ➕ Add New Account
           </button>
@@ -114,11 +114,11 @@ const Accounts = () => {
             <div className="text-3xl">📊</div>
           </div>
         </div>
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-600 font-medium">Net Worth</p>
-              <p className="text-2xl font-bold text-blue-700">₹{(totalAssets - totalLiabilities).toLocaleString()}</p>
+              <p className="text-green-600 font-medium">Net Worth</p>
+              <p className="text-2xl font-bold text-green-700">₹{(totalAssets - totalLiabilities).toLocaleString()}</p>
             </div>
             <div className="text-3xl">🎯</div>
           </div>
@@ -135,7 +135,7 @@ const Accounts = () => {
                 placeholder="🔍 Search accounts..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
             </div>
           </div>
@@ -143,7 +143,7 @@ const Accounts = () => {
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
               <option value="All">All Types</option>
               <option value="Asset">Assets</option>
@@ -174,7 +174,7 @@ const Accounts = () => {
                 <tr key={account.id} className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-blue-500">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-green-500">
                         {account.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -204,7 +204,7 @@ const Accounts = () => {
                     <div className="flex justify-center space-x-2">
                       <button 
                         onClick={() => handleEditAccount(account)}
-                        className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-md hover:bg-blue-200 transition-colors font-medium"
+                        className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-md hover:bg-green-200 transition-colors font-medium"
                       >
                         Edit
                       </button>
@@ -251,7 +251,7 @@ const Accounts = () => {
                   type="text" 
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" 
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" 
                   required
                 />
               </div>
@@ -260,7 +260,7 @@ const Accounts = () => {
                 <select 
                   value={formData.type}
                   onChange={(e) => setFormData({...formData, type: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                 >
                   <option value="Asset">Asset</option>
                   <option value="Liability">Liability</option>
@@ -275,7 +275,7 @@ const Accounts = () => {
                   type="number" 
                   value={formData.balance}
                   onChange={(e) => setFormData({...formData, balance: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" 
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" 
                   step="0.01"
                 />
               </div>
@@ -284,12 +284,12 @@ const Accounts = () => {
                 <textarea 
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" 
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" 
                   rows="3"
                 ></textarea>
               </div>
               <div className="flex gap-3 pt-4">
-                <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                <button type="submit" className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
                   {editingAccount ? 'Update Account' : 'Create Account'}
                 </button>
                 <button 

@@ -15,7 +15,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-primary p-6 rounded-lg mb-6">
+      <div className="bg-green-600 p-6 rounded-lg mb-6">
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-bold text-white">Dashboard</h2>

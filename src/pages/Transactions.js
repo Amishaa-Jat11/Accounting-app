@@ -88,15 +88,15 @@ const Transactions = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-primary p-6 rounded-lg">
+      <div className="bg-green-600 p-6 rounded-lg">
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-bold text-white">Transactions</h2>
-            <p className="text-blue-100 mt-1">Manage and track all your financial transactions</p>
+            <p className="text-green-100 mt-1">Manage and track all your financial transactions</p>
           </div>
           <button 
             onClick={() => setShowAddModal(true)}
-            className="bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors font-semibold shadow-md"
+            className="bg-white text-green-600 px-6 py-3 rounded-lg hover:bg-green-50 transition-colors font-semibold shadow-md"
           >
             + Add Transaction
           </button>
@@ -127,16 +127,16 @@ const Transactions = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
+        <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Net Amount</p>
-              <p className={`text-2xl font-bold ${netAmount >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+              <p className={`text-2xl font-bold ${netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 ₹{Math.abs(netAmount).toLocaleString()}
               </p>
-              <p className="text-sm text-blue-500 mt-1">This month</p>
+              <p className="text-sm text-green-500 mt-1">This month</p>
             </div>
-            <div className="text-3xl text-blue-500">💰</div>
+            <div className="text-3xl text-green-500">💰</div>
           </div>
         </div>
       </div>
@@ -149,7 +149,7 @@ const Transactions = () => {
             <button
               onClick={() => setActiveTab('all')}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'
+                activeTab === 'all' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'
               }`}
             >
               All Transactions
@@ -180,7 +180,7 @@ const Transactions = () => {
                 type="date"
                 value={filters.fromDate}
                 onChange={(e) => setFilters({...filters, fromDate: e.target.value})}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
             <div>
@@ -189,7 +189,7 @@ const Transactions = () => {
                 type="date"
                 value={filters.toDate}
                 onChange={(e) => setFilters({...filters, toDate: e.target.value})}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
             <div>
@@ -197,7 +197,7 @@ const Transactions = () => {
               <select 
                 value={filters.category}
                 onChange={(e) => setFilters({...filters, category: e.target.value})}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
                 <option value="">All Categories</option>
                 <option value="Rent">Rent</option>
@@ -210,7 +210,7 @@ const Transactions = () => {
             <div className="flex items-end">
               <button 
                 onClick={() => setFilters({fromDate: '', toDate: '', category: ''})}
-                className="w-full bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
               >
                 Clear Filters
               </button>
@@ -281,7 +281,7 @@ const Transactions = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-2">
-                      <button className="text-blue-600 hover:text-blue-800 font-medium">Edit</button>
+                      <button className="text-green-600 hover:text-green-800 font-medium">Edit</button>
                       <button className="text-red-600 hover:text-red-800 font-medium">Delete</button>
                     </div>
                   </td>
@@ -303,7 +303,7 @@ const Transactions = () => {
             <button className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 disabled:opacity-50" disabled>
               Previous
             </button>
-            <button className="px-3 py-2 text-sm bg-primary text-white rounded-lg">1</button>
+            <button className="px-3 py-2 text-sm bg-green-600 text-white rounded-lg">1</button>
             <button className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">2</button>
             <button className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">
               Next
@@ -334,7 +334,7 @@ const Transactions = () => {
                   name="date"
                   value={formData.date}
                   onChange={handleInputChange}
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   required
                 />
               </div>
@@ -346,7 +346,7 @@ const Transactions = () => {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   placeholder="Enter transaction description"
                   required
                 />
@@ -358,7 +358,7 @@ const Transactions = () => {
                   name="account"
                   value={formData.account}
                   onChange={handleInputChange}
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   required
                 >
                   <option value="">Select Account</option>
@@ -375,7 +375,7 @@ const Transactions = () => {
                     name="type"
                     value={formData.type}
                     onChange={handleInputChange}
-                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   >
                     <option value="Income">Income</option>
                     <option value="Expense">Expense</option>
@@ -389,7 +389,7 @@ const Transactions = () => {
                     name="amount"
                     value={formData.amount}
                     onChange={handleInputChange}
-                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="0"
                     min="0"
                     step="0.01"
@@ -405,7 +405,7 @@ const Transactions = () => {
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   placeholder="Enter category"
                   required
                 />
@@ -417,7 +417,7 @@ const Transactions = () => {
                   name="status"
                   value={formData.status}
                   onChange={handleInputChange}
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 >
                   <option value="Completed">Completed</option>
                   <option value="Pending">Pending</option>
@@ -434,7 +434,7 @@ const Transactions = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-primary text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
                 >
                   Add Transaction
                 </button>
