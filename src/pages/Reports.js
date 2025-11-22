@@ -19,9 +19,9 @@ const Reports = () => {
       name: 'Balance Sheet', 
       description: 'View assets, liabilities and equity', 
       icon: '⚖️',
-      color: 'from-blue-400 to-blue-600',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-700'
+      color: 'from-green-400 to-green-600',
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-700'
     },
     { 
       id: 3, 
@@ -78,11 +78,11 @@ const Reports = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-blue-600 rounded-xl p-6 text-white">
+      <div className="bg-green-600 rounded-xl p-6 text-white">
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-bold mb-2">Financial Reports</h2>
-            <p className="text-indigo-100">Generate comprehensive business reports and analytics</p>
+            <p className="text-green-100">Generate comprehensive business reports and analytics</p>
           </div>
           <div className="flex space-x-3">
             <button 
@@ -91,7 +91,7 @@ const Reports = () => {
             >
               🔍 Filters
             </button>
-            <button className="bg-white text-indigo-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition-all font-semibold">
+            <button className="bg-white text-green-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition-all font-semibold">
               📤 Export All
             </button>
           </div>
@@ -127,7 +127,7 @@ const Reports = () => {
               <select 
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
               >
                 <option>This Month</option>
                 <option>Last Month</option>
@@ -138,7 +138,7 @@ const Reports = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
                 <option>All Types</option>
                 <option>Financial</option>
                 <option>Tax</option>
@@ -147,14 +147,14 @@ const Reports = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Format</label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
                 <option>PDF</option>
                 <option>Excel</option>
                 <option>CSV</option>
               </select>
             </div>
             <div className="flex items-end">
-              <button className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+              <button className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
                 Apply Filters
               </button>
             </div>
@@ -167,7 +167,7 @@ const Reports = () => {
         <h3 className="text-xl font-semibold text-gray-800 mb-4">Available Reports</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {reportTypes.map((report) => (
-            <div key={report.id} className="group bg-white rounded-xl shadow-sm border hover:shadow-lg transition-all duration-300 overflow-hidden border-l-4 border-l-blue-500">
+            <div key={report.id} className="group bg-white rounded-xl shadow-sm border hover:shadow-lg transition-all duration-300 overflow-hidden border-l-4 border-l-green-500">
               <div className="p-6">
                 <div className="flex items-center mb-4">
                   <div className={`w-12 h-12 ${report.bgColor} rounded-lg flex items-center justify-center text-2xl mr-4`}>
@@ -180,7 +180,7 @@ const Reports = () => {
                 </div>
                 <p className="text-gray-600 mb-6">{report.description}</p>
                 <div className="flex space-x-3">
-                  <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-all font-medium">
+                  <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-all font-medium">
                     Generate
                   </button>
                 </div>
@@ -209,7 +209,7 @@ const Reports = () => {
                 <tr key={report.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-blue-500">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-green-500">
                         {report.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -219,7 +219,7 @@ const Reports = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                       {report.type}
                     </span>
                   </td>
@@ -236,7 +236,7 @@ const Reports = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-center space-x-2">
-                      <button className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-md hover:bg-blue-200 transition-colors font-medium">
+                      <button className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-md hover:bg-green-200 transition-colors font-medium">
                         Download
                       </button>
                       <button className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200 transition-colors font-medium">
