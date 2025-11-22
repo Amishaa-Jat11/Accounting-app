@@ -45,7 +45,7 @@ const Sidebar = () => {
                   onClick={closeSidebar}
                   className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
                     location.pathname === item.path
-                      ? 'bg-primary text-white'
+                      ? 'bg-green-600 text-white'
                       : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
