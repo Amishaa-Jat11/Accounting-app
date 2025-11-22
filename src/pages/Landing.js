@@ -51,12 +51,11 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+      <header className="bg-green-600 shadow-sm border-b sticky top-0 z-50">
+        <div className="container mx-auto">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <img src="/img-accounting.png" alt="Accounting" className="w-8 h-8" />
-              <h1 className="text-2xl font-bold text-blue-600">NextBook Cloud</h1>
+            <div className="flex items-center">
+              <img src="/agritek-logo.png" alt="Agritek" className="w-20 h-20" />
             </div>
             <div className="flex items-center space-x-4">
               <Link 
@@ -67,7 +66,7 @@ const Landing = () => {
               </Link>
               <Link 
                 to="/signup"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                className="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
                 Sign Up
               </Link>
@@ -276,8 +275,7 @@ const Landing = () => {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <img src="/img-accounting.png" alt="Accounting" className="w-8 h-8" />
-                <h3 className="text-xl font-bold text-blue-400">NextBook Cloud</h3>
+                <img src="/agritek-logo.png" alt="Agritek" className="w-8 h-8" />
               </div>
               <p className="text-gray-400">Modern accounting made simple for businesses of all sizes.</p>
             </div>
