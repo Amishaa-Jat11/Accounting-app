@@ -60,13 +60,13 @@ const Landing = () => {
             <div className="flex items-center space-x-4">
               <Link 
                 to="/login"
-                className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                className="text-white hover:text-green-200 font-medium transition-colors"
               >
                 Login
               </Link>
               <Link 
                 to="/signup"
-                className="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                className="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-green-50 transition-colors font-medium"
               >
                 Sign Up
               </Link>
@@ -82,7 +82,7 @@ const Landing = () => {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="text-left">
                 <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                  Modern <span className="text-blue-600">Accounting</span> Made Simple
+                  Modern <span className="text-green-600">Accounting</span> Made Simple
                 </h1>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                   Streamline your business finances with our powerful yet easy-to-use accounting platform. 
@@ -92,13 +92,13 @@ const Landing = () => {
                 <div className="flex flex-col sm:flex-row gap-4 mb-8">
                   <Link 
                     to="/signup"
-                    className="bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                    className="bg-green-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                   >
                     Start Free Trial
                   </Link>
                   <Link 
                     to="/login"
-                    className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-50 transition-all shadow-lg"
+                    className="bg-white text-green-600 border-2 border-green-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-green-50 transition-all shadow-lg"
                   >
                     Watch Demo
                   </Link>
@@ -125,17 +125,17 @@ const Landing = () => {
                         <p className="text-sm text-gray-600">Revenue</p>
                         <p className="text-2xl font-bold text-green-600">₹2.5L</p>
                       </div>
-                      <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                      <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
                         <p className="text-sm text-gray-600">Profit</p>
-                        <p className="text-2xl font-bold text-blue-600">₹85K</p>
+                        <p className="text-2xl font-bold text-green-600">₹85K</p>
                       </div>
                     </div>
-                    <div className="bg-gray-50 h-32 rounded-lg flex items-center justify-center">
-                      <img src="/img-accounting.png" alt="Accounting" className="w-16 h-16" />
+                    <div className="bg-green-600 h-32 rounded-lg flex items-center justify-center">
+                      <img src="/agritek-logo.png" alt="Agritek" className="w-16 h-16" />
                     </div>
                   </div>
                 </div>
-                <div className="absolute -top-4 -right-4 bg-blue-600 text-white p-3 rounded-full shadow-lg">
+                <div className="absolute -top-4 -right-4 bg-green-600 text-white p-3 rounded-full shadow-lg">
                   <span className="text-xl">💡</span>
                 </div>
               </div>
@@ -145,10 +145,8 @@ const Landing = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 relative overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center bg-fixed blur-sm" style={{backgroundImage: 'url(/img-accounting2.webp)'}}></div>
-        <div className="absolute inset-0 bg-white/30"></div>
-        <div className="container mx-auto px-4 relative z-10">
+      <section className="py-16 bg-green-600">
+        <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
@@ -243,28 +241,28 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-600">
+      <section className="py-20 bg-green-600">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl font-bold text-white mb-6">Ready to Transform Your Business?</h2>
-            <p className="text-xl text-blue-100 mb-8">Join thousands of businesses already using NextBook Cloud to streamline their finances</p>
+            <p className="text-xl text-green-100 mb-8">Join thousands of businesses already using NextBook Cloud to streamline their finances</p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Link 
                 to="/signup"
-                className="bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-semibold hover:bg-gray-100 transition-all shadow-lg inline-block"
+                className="bg-white text-green-600 px-10 py-4 rounded-xl text-xl font-semibold hover:bg-gray-100 transition-all shadow-lg inline-block"
               >
                 Start Free Trial
               </Link>
               <Link 
                 to="/login"
-                className="bg-blue-700 text-white px-10 py-4 rounded-xl text-xl font-semibold hover:bg-blue-800 transition-all shadow-lg inline-block"
+                className="bg-green-700 text-white px-10 py-4 rounded-xl text-xl font-semibold hover:bg-green-800 transition-all shadow-lg inline-block"
               >
                 Login Now
               </Link>
             </div>
             
-            <p className="text-blue-200 text-sm">✅ 14-day free trial • ✅ No setup fees • ✅ Cancel anytime</p>
+            <p className="text-green-200 text-sm">✅ 14-day free trial • ✅ No setup fees • ✅ Cancel anytime</p>
           </div>
         </div>
       </section>
