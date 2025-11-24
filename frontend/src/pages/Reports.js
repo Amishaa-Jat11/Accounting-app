@@ -1,8 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Reports = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('This Month');
   const [showFilters, setShowFilters] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchReportsData();
+  }, []);
+
+  const fetchReportsData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const [accountsResponse, transactionsResponse] = await Promise.all([
+        fetch('http://localhost:5000/api/accounts', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('http://localhost:5000/api/transactions', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+      ]);
+      
+      if (accountsResponse.ok) {
+        const accountsData = await accountsResponse.json();
+        setAccounts(Array.isArray(accountsData) ? accountsData : []);
+      }
+      
+      if (transactionsResponse.ok) {
+        const transactionsData = await transactionsResponse.json();
+        setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
+      }
+    } catch (error) {
+      console.error('Error fetching reports data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const reportTypes = [
     { 
@@ -61,18 +97,13 @@ const Reports = () => {
     }
   ];
 
-  const recentReports = [
-    { id: 1, name: 'Profit & Loss - January 2024', date: '2024-01-15', type: 'P&L', size: '2.3 MB', status: 'Ready' },
-    { id: 2, name: 'Balance Sheet - December 2023', date: '2024-01-01', type: 'Balance', size: '1.8 MB', status: 'Ready' },
-    { id: 3, name: 'Cash Flow - Q4 2023', date: '2023-12-31', type: 'Cash Flow', size: '1.5 MB', status: 'Processing' },
-    { id: 4, name: 'Tax Report - FY 2023', date: '2023-12-28', type: 'Tax', size: '3.1 MB', status: 'Ready' }
-  ];
+  const recentReports = [];
 
   const quickStats = [
-    { label: 'Total Reports Generated', value: '47', icon: '📈', change: '+12%' },
-    { label: 'This Month', value: '8', icon: '📅', change: '+25%' },
-    { label: 'Pending Reports', value: '2', icon: '⏳', change: '-50%' },
-    { label: 'Storage Used', value: '156 MB', icon: '💾', change: '+8%' }
+    { label: 'Total Accounts', value: (Array.isArray(accounts) ? accounts.length : 0).toString(), icon: '📈', change: `${Array.isArray(accounts) ? accounts.length : 0} active` },
+    { label: 'Total Transactions', value: (Array.isArray(transactions) ? transactions.length : 0).toString(), icon: '📅', change: `This period` },
+    { label: 'Income Transactions', value: (Array.isArray(transactions) ? transactions.filter(t => t.type === 'Income').length : 0).toString(), icon: '⏳', change: 'Revenue entries' },
+    { label: 'Expense Transactions', value: (Array.isArray(transactions) ? transactions.filter(t => t.type === 'Expense').length : 0).toString(), icon: '💾', change: 'Expense entries' }
   ];
 
   return (
@@ -175,7 +206,7 @@ const Reports = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">{report.name}</h3>
-                    <p className="text-sm text-gray-500">Last generated: 2 days ago</p>
+                    <p className="text-sm text-gray-500">{(Array.isArray(transactions) ? transactions.length : 0) > 0 ? 'Data available' : 'No data yet'}</p>
                   </div>
                 </div>
                 <p className="text-gray-600 mb-6">{report.description}</p>
@@ -205,47 +236,57 @@ const Reports = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {recentReports.map((report, index) => (
-                <tr key={report.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-green-500">
-                        {report.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900 text-base">{report.name}</div>
-                        <div className="text-sm text-gray-500 mt-1">Financial Report • PDF Format</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                      {report.type}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{report.date}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{report.size}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      report.status === 'Ready' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {report.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-center space-x-2">
-                      <button className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-md hover:bg-green-200 transition-colors font-medium">
-                        Download
-                      </button>
-                      <button className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200 transition-colors font-medium">
-                        Share
-                      </button>
-                    </div>
+              {recentReports.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                    <div className="text-6xl mb-4">📊</div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No reports generated yet</h3>
+                    <p className="text-gray-500">Generate your first report to see it here</p>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                recentReports.map((report, index) => (
+                  <tr key={report.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-green-500">
+                          {report.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900 text-base">{report.name}</div>
+                          <div className="text-sm text-gray-500 mt-1">Financial Report • PDF Format</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                        {report.type}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{report.date}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{report.size}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        report.status === 'Ready' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {report.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center space-x-2">
+                        <button className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-md hover:bg-green-200 transition-colors font-medium">
+                          Download
+                        </button>
+                        <button className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200 transition-colors font-medium">
+                          Share
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

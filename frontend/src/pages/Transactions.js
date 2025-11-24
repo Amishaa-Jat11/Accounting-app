@@ -1,18 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Transactions = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [transactions, setTransactions] = useState([
-    { id: 1, date: '2024-01-15', description: 'Office Rent Payment', account: 'Cash Account', amount: -15000, type: 'Expense', category: 'Rent', status: 'Completed' },
-    { id: 2, date: '2024-01-14', description: 'Service Revenue from Client A', account: 'Bank Account', amount: 35000, type: 'Income', category: 'Service', status: 'Completed' },
-    { id: 3, date: '2024-01-13', description: 'Office Supplies Purchase', account: 'Cash Account', amount: -2500, type: 'Expense', category: 'Supplies', status: 'Completed' },
-    { id: 4, date: '2024-01-12', description: 'Consulting Fee', account: 'Bank Account', amount: 25000, type: 'Income', category: 'Consulting', status: 'Pending' },
-    { id: 5, date: '2024-01-11', description: 'Internet Bill', account: 'Bank Account', amount: -2000, type: 'Expense', category: 'Utilities', status: 'Completed' },
-    { id: 6, date: '2024-01-10', description: 'Product Sales', account: 'Cash Account', amount: 18000, type: 'Income', category: 'Sales', status: 'Completed' },
-    { id: 7, date: '2024-01-09', description: 'Marketing Expenses', account: 'Credit Card', amount: -5000, type: 'Expense', category: 'Marketing', status: 'Pending' },
-    { id: 8, date: '2024-01-08', description: 'Freelance Payment', account: 'Bank Account', amount: 12000, type: 'Income', category: 'Freelance', status: 'Completed' }
-  ]);
+  const [transactions, setTransactions] = useState([]);
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTransactions();
+    fetchAccounts();
+  }, []);
+
+  const fetchTransactions = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/transactions', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setTransactions(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAccounts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/accounts', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAccounts(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+    }
+  };
   
   const [formData, setFormData] = useState({
     date: '',
@@ -37,27 +73,44 @@ const Transactions = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newTransaction = {
-      id: transactions.length + 1,
-      ...formData,
-      amount: formData.type === 'Expense' ? -Math.abs(parseFloat(formData.amount)) : parseFloat(formData.amount)
-    };
-    setTransactions([newTransaction, ...transactions]);
-    setFormData({
-      date: '',
-      description: '',
-      account: '',
-      amount: '',
-      type: 'Income',
-      category: '',
-      status: 'Completed'
-    });
-    setShowAddModal(false);
+    try {
+      const token = localStorage.getItem('token');
+      const selectedAccount = accounts.find(acc => acc.name === formData.account);
+      
+      const response = await fetch('http://localhost:5000/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...formData,
+          accountId: selectedAccount?._id,
+          amount: formData.type === 'Expense' ? -Math.abs(parseFloat(formData.amount)) : parseFloat(formData.amount)
+        })
+      });
+      
+      if (response.ok) {
+        fetchTransactions();
+        setFormData({
+          date: '',
+          description: '',
+          account: '',
+          amount: '',
+          type: 'Income',
+          category: '',
+          status: 'Completed'
+        });
+        setShowAddModal(false);
+      }
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+    }
   };
 
-  const filteredTransactions = transactions.filter(transaction => {
+  const filteredTransactions = (Array.isArray(transactions) ? transactions : []).filter(transaction => {
     // Tab filter
     let tabMatch = true;
     if (activeTab === 'income') tabMatch = transaction.type === 'Income';
@@ -81,8 +134,8 @@ const Transactions = () => {
     return tabMatch && dateMatch && categoryMatch;
   });
 
-  const totalIncome = transactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0);
-  const totalExpense = Math.abs(transactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + t.amount, 0));
+  const totalIncome = (Array.isArray(transactions) ? transactions : []).filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0);
+  const totalExpense = Math.abs((Array.isArray(transactions) ? transactions : []).filter(t => t.type === 'Expense').reduce((sum, t) => sum + t.amount, 0));
   const netAmount = totalIncome - totalExpense;
 
   return (
@@ -249,44 +302,54 @@ const Transactions = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredTransactions.map((transaction) => (
-                <tr key={transaction.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(transaction.date).toLocaleDateString('en-IN')}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    <div className="font-medium">{transaction.description}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {transaction.account}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      transaction.type === 'Income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      {transaction.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <span className={transaction.amount > 0 ? 'text-green-600' : 'text-red-600'}>
-                      {transaction.amount > 0 ? '+' : ''}₹{Math.abs(transaction.amount).toLocaleString()}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      transaction.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {transaction.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex space-x-2">
-                      <button className="text-green-600 hover:text-green-800 font-medium">Edit</button>
-                      <button className="text-red-600 hover:text-red-800 font-medium">Delete</button>
-                    </div>
+              {filteredTransactions.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                    <div className="text-6xl mb-4">💳</div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No transactions found</h3>
+                    <p className="text-gray-500">Add your first transaction to get started</p>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredTransactions.map((transaction) => (
+                  <tr key={transaction._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {new Date(transaction.date).toLocaleDateString('en-IN')}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="font-medium">{transaction.description}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {transaction.account}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        transaction.type === 'Income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {transaction.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <span className={transaction.amount > 0 ? 'text-green-600' : 'text-red-600'}>
+                        {transaction.amount > 0 ? '+' : ''}₹{Math.abs(transaction.amount).toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        transaction.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {transaction.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="flex space-x-2">
+                        <button className="text-green-600 hover:text-green-800 font-medium">Edit</button>
+                        <button className="text-red-600 hover:text-red-800 font-medium">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -362,9 +425,9 @@ const Transactions = () => {
                   required
                 >
                   <option value="">Select Account</option>
-                  <option value="Cash Account">Cash Account</option>
-                  <option value="Bank Account">Bank Account</option>
-                  <option value="Credit Card">Credit Card</option>
+                  {(Array.isArray(accounts) ? accounts : []).map(account => (
+                    <option key={account._id} value={account.name}>{account.name}</option>
+                  ))}
                 </select>
               </div>
               

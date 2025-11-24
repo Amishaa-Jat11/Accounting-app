@@ -1,16 +1,65 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [accounts, setAccounts] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Fetch accounts
+      const accountsResponse = await fetch('http://localhost:5000/api/accounts', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      // Fetch transactions
+      const transactionsResponse = await fetch('http://localhost:5000/api/transactions', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (accountsResponse.ok) {
+        const accountsData = await accountsResponse.json();
+        setAccounts(Array.isArray(accountsData) ? accountsData : []);
+      }
+      
+      if (transactionsResponse.ok) {
+        const transactionsData = await transactionsResponse.json();
+        setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
     navigate('/');
   };
 
   const handleNavigation = (path) => {
     navigate(path);
   };
+
+  // Calculate stats
+  const totalRevenue = transactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0);
+  const totalExpenses = Math.abs(transactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + t.amount, 0));
+  const netProfit = totalRevenue - totalExpenses;
+  const totalAccounts = accounts.length;
+  const recentTransactions = Array.isArray(transactions) ? transactions.slice(0, 5) : [];
 
   return (
     <div className="space-y-6">
@@ -36,8 +85,8 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-3xl font-bold text-green-600">₹1,25,000</p>
-              <p className="text-sm text-green-500 mt-1">↗ +12% from last month</p>
+              <p className="text-3xl font-bold text-green-600">₹{totalRevenue.toLocaleString()}</p>
+              <p className="text-sm text-green-500 mt-1">{transactions.filter(t => t.type === 'Income').length} transactions</p>
             </div>
             <div className="text-3xl text-green-500">💰</div>
           </div>
@@ -47,8 +96,8 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Expenses</p>
-              <p className="text-3xl font-bold text-red-600">₹85,000</p>
-              <p className="text-sm text-red-500 mt-1">↗ +8% from last month</p>
+              <p className="text-3xl font-bold text-red-600">₹{totalExpenses.toLocaleString()}</p>
+              <p className="text-sm text-red-500 mt-1">{transactions.filter(t => t.type === 'Expense').length} transactions</p>
             </div>
             <div className="text-3xl text-red-500">📊</div>
           </div>
@@ -58,8 +107,8 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Net Profit</p>
-              <p className="text-3xl font-bold text-blue-600">₹40,000</p>
-              <p className="text-sm text-blue-500 mt-1">↗ +15% from last month</p>
+              <p className={`text-3xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>₹{Math.abs(netProfit).toLocaleString()}</p>
+              <p className="text-sm text-gray-500 mt-1">{netProfit >= 0 ? 'Profit' : 'Loss'} this period</p>
             </div>
             <div className="text-3xl text-blue-500">📈</div>
           </div>
@@ -69,8 +118,8 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Pending Invoices</p>
-              <p className="text-3xl font-bold text-purple-600">12</p>
-              <p className="text-sm text-purple-500 mt-1">₹25,000 total</p>
+              <p className="text-3xl font-bold text-purple-600">{totalAccounts}</p>
+              <p className="text-sm text-purple-500 mt-1">Total accounts</p>
             </div>
             <div className="text-3xl text-purple-500">📄</div>
           </div>
@@ -82,19 +131,9 @@ const Dashboard = () => {
         {/* Monthly Overview */}
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h3 className="text-xl font-semibold mb-4 text-gray-800">Monthly Overview</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span className="font-medium">January 2024</span>
-              <span className="text-green-600 font-semibold">+₹45,000</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span className="font-medium">December 2023</span>
-              <span className="text-green-600 font-semibold">+₹38,000</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span className="font-medium">November 2023</span>
-              <span className="text-green-600 font-semibold">+₹42,000</span>
-            </div>
+          <div className="text-center py-8">
+            <p className="text-gray-500">No data available</p>
+            <p className="text-sm text-gray-400 mt-2">Add transactions to see monthly overview</p>
           </div>
         </div>
 
@@ -159,34 +198,36 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              <tr className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-900">Jan 15, 2024</td>
-                <td className="px-6 py-4 text-sm text-gray-900">Office Supplies Purchase</td>
-                <td className="px-6 py-4 text-sm text-gray-500">Expense</td>
-                <td className="px-6 py-4 text-sm text-red-600 font-medium">-₹5,000</td>
-                <td className="px-6 py-4"><span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Completed</span></td>
-              </tr>
-              <tr className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-900">Jan 14, 2024</td>
-                <td className="px-6 py-4 text-sm text-gray-900">Client Payment Received</td>
-                <td className="px-6 py-4 text-sm text-gray-500">Income</td>
-                <td className="px-6 py-4 text-sm text-green-600 font-medium">+₹25,000</td>
-                <td className="px-6 py-4"><span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Completed</span></td>
-              </tr>
-              <tr className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-900">Jan 13, 2024</td>
-                <td className="px-6 py-4 text-sm text-gray-900">Software Subscription</td>
-                <td className="px-6 py-4 text-sm text-gray-500">Expense</td>
-                <td className="px-6 py-4 text-sm text-red-600 font-medium">-₹2,500</td>
-                <td className="px-6 py-4"><span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">Pending</span></td>
-              </tr>
-              <tr className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-900">Jan 12, 2024</td>
-                <td className="px-6 py-4 text-sm text-gray-900">Consulting Service</td>
-                <td className="px-6 py-4 text-sm text-gray-500">Income</td>
-                <td className="px-6 py-4 text-sm text-green-600 font-medium">+₹15,000</td>
-                <td className="px-6 py-4"><span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Completed</span></td>
-              </tr>
+              {recentTransactions.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                    No transactions found
+                    <p className="text-sm text-gray-400 mt-2">Add your first transaction to get started</p>
+                  </td>
+                </tr>
+              ) : (
+                recentTransactions.map((transaction) => (
+                  <tr key={transaction._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {new Date(transaction.date).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{transaction.description}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{transaction.category}</td>
+                    <td className="px-6 py-4 text-sm font-medium">
+                      <span className={transaction.amount > 0 ? 'text-green-600' : 'text-red-600'}>
+                        {transaction.amount > 0 ? '+' : ''}₹{Math.abs(transaction.amount).toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        transaction.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {transaction.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -196,55 +237,37 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h3 className="text-xl font-semibold mb-4 text-gray-800">Account Balances</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
-                <span className="font-medium">Cash Account</span>
-              </div>
-              <span className="font-semibold text-green-600">₹50,000</span>
+          {accounts.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No accounts found</p>
+              <p className="text-sm text-gray-400 mt-2">Create your first account to get started</p>
             </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                <span className="font-medium">Bank Account</span>
-              </div>
-              <span className="font-semibold text-green-600">₹2,50,000</span>
+          ) : (
+            <div className="space-y-3">
+              {(Array.isArray(accounts) ? accounts : []).slice(0, 5).map((account) => (
+                <div key={account._id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center">
+                    <div className={`w-3 h-3 rounded-full mr-3 ${
+                      account.type === 'Asset' ? 'bg-green-500' : 'bg-red-500'
+                    }`}></div>
+                    <span className="font-medium">{account.name}</span>
+                  </div>
+                  <span className={`font-semibold ${
+                    account.balance >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    ₹{Math.abs(account.balance).toLocaleString()}
+                  </span>
+                </div>
+              ))}
             </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
-                <span className="font-medium">Credit Card</span>
-              </div>
-              <span className="font-semibold text-red-600">-₹15,000</span>
-            </div>
-          </div>
+          )}
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h3 className="text-xl font-semibold mb-4 text-gray-800">Upcoming Bills</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-              <div>
-                <p className="font-medium text-gray-800">Office Rent</p>
-                <p className="text-sm text-gray-600">Due: Jan 20, 2024</p>
-              </div>
-              <span className="font-semibold text-red-600">₹15,000</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
-              <div>
-                <p className="font-medium text-gray-800">Internet Bill</p>
-                <p className="text-sm text-gray-600">Due: Jan 25, 2024</p>
-              </div>
-              <span className="font-semibold text-yellow-600">₹2,000</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-              <div>
-                <p className="font-medium text-gray-800">Insurance Premium</p>
-                <p className="text-sm text-gray-600">Due: Jan 30, 2024</p>
-              </div>
-              <span className="font-semibold text-blue-600">₹8,000</span>
-            </div>
+          <div className="text-center py-8">
+            <p className="text-gray-500">No upcoming bills</p>
+            <p className="text-sm text-gray-400 mt-2">Bills will appear here when added</p>
           </div>
         </div>
       </div>

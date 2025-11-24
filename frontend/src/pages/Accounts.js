@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Accounts = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -7,16 +7,34 @@ const Accounts = () => {
   const [editingAccount, setEditingAccount] = useState(null);
   const [formData, setFormData] = useState({ name: '', type: 'Asset', balance: '', description: '' });
   
-  const [accounts, setAccounts] = useState([
-    { id: 1, name: 'Cash Account', type: 'Asset', balance: 50000, description: 'Primary cash account for daily operations', lastUpdated: '2024-01-15' },
-    { id: 2, name: 'Bank Account - SBI', type: 'Asset', balance: 250000, description: 'State Bank of India current account', lastUpdated: '2024-01-14' },
-    { id: 3, name: 'Accounts Payable', type: 'Liability', balance: -15000, description: 'Outstanding vendor payments', lastUpdated: '2024-01-13' },
-    { id: 4, name: 'Accounts Receivable', type: 'Asset', balance: 75000, description: 'Customer outstanding payments', lastUpdated: '2024-01-12' },
-    { id: 5, name: 'Office Equipment', type: 'Asset', balance: 125000, description: 'Computers, furniture and office equipment', lastUpdated: '2024-01-10' },
-    { id: 6, name: 'Loan Payable', type: 'Liability', balance: -200000, description: 'Business loan from HDFC Bank', lastUpdated: '2024-01-08' }
-  ]);
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredAccounts = accounts.filter(account => {
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
+
+  const fetchAccounts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/accounts', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAccounts(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredAccounts = (Array.isArray(accounts) ? accounts : []).filter(account => {
     const matchesSearch = account.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'All' || account.type === filterType;
     return matchesSearch && matchesFilter;
@@ -30,40 +48,82 @@ const Accounts = () => {
     return type === 'Asset' ? '📈' : '📉';
   };
 
-  const handleAddAccount = (e) => {
+  const handleAddAccount = async (e) => {
     e.preventDefault();
-    const newAccount = {
-      id: Date.now(),
-      ...formData,
-      balance: parseFloat(formData.balance) || 0,
-      lastUpdated: new Date().toISOString().split('T')[0]
-    };
-    setAccounts([...accounts, newAccount]);
-    setFormData({ name: '', type: 'Asset', balance: '', description: '' });
-    setShowAddModal(false);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/accounts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...formData,
+          balance: parseFloat(formData.balance) || 0
+        })
+      });
+      
+      if (response.ok) {
+        fetchAccounts();
+        setFormData({ name: '', type: 'Asset', balance: '', description: '' });
+        setShowAddModal(false);
+      }
+    } catch (error) {
+      console.error('Error adding account:', error);
+    }
   };
 
   const handleEditAccount = (account) => {
-    setEditingAccount(account.id);
+    setEditingAccount(account._id);
     setFormData({ ...account, balance: account.balance.toString() });
     setShowAddModal(true);
   };
 
-  const handleUpdateAccount = (e) => {
+  const handleUpdateAccount = async (e) => {
     e.preventDefault();
-    setAccounts(accounts.map(acc => 
-      acc.id === editingAccount 
-        ? { ...formData, id: editingAccount, balance: parseFloat(formData.balance) || 0, lastUpdated: new Date().toISOString().split('T')[0] }
-        : acc
-    ));
-    setFormData({ name: '', type: 'Asset', balance: '', description: '' });
-    setEditingAccount(null);
-    setShowAddModal(false);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/accounts/${editingAccount}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...formData,
+          balance: parseFloat(formData.balance) || 0
+        })
+      });
+      
+      if (response.ok) {
+        fetchAccounts();
+        setFormData({ name: '', type: 'Asset', balance: '', description: '' });
+        setEditingAccount(null);
+        setShowAddModal(false);
+      }
+    } catch (error) {
+      console.error('Error updating account:', error);
+    }
   };
 
-  const handleDeleteAccount = (id) => {
+  const handleDeleteAccount = async (id) => {
     if (window.confirm('Are you sure you want to delete this account?')) {
-      setAccounts(accounts.filter(acc => acc.id !== id));
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:5000/api/accounts/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          fetchAccounts();
+        }
+      } catch (error) {
+        console.error('Error deleting account:', error);
+      }
     }
   };
 
@@ -73,8 +133,8 @@ const Accounts = () => {
     setFormData({ name: '', type: 'Asset', balance: '', description: '' });
   };
 
-  const totalAssets = accounts.filter(acc => acc.type === 'Asset').reduce((sum, acc) => sum + acc.balance, 0);
-  const totalLiabilities = Math.abs(accounts.filter(acc => acc.type === 'Liability').reduce((sum, acc) => sum + acc.balance, 0));
+  const totalAssets = (Array.isArray(accounts) ? accounts : []).filter(acc => acc.type === 'Asset').reduce((sum, acc) => sum + acc.balance, 0);
+  const totalLiabilities = Math.abs((Array.isArray(accounts) ? accounts : []).filter(acc => acc.type === 'Liability').reduce((sum, acc) => sum + acc.balance, 0));
 
   return (
     <div className="space-y-6">
@@ -171,7 +231,7 @@ const Accounts = () => {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filteredAccounts.map((account, index) => (
-                <tr key={account.id} className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
+                <tr key={account._id} className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-green-500">
@@ -198,7 +258,7 @@ const Accounts = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {account.lastUpdated}
+                    {new Date(account.updatedAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-center space-x-2">
@@ -209,7 +269,7 @@ const Accounts = () => {
                         Edit
                       </button>
                       <button 
-                        onClick={() => handleDeleteAccount(account.id)}
+                        onClick={() => handleDeleteAccount(account._id)}
                         className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-md hover:bg-red-200 transition-colors font-medium"
                       >
                         Delete
@@ -224,9 +284,9 @@ const Accounts = () => {
         
         {filteredAccounts.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
+            <div className="text-6xl mb-4">📊</div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No accounts found</h3>
-            <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+            <p className="text-gray-500">Create your first account to get started</p>
           </div>
         )}
       </div>

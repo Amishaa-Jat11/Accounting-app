@@ -6,21 +6,27 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "clear": "node scripts/seed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "mongoose": "^7.0.3",
-    "bcryptjs": "^2.4.3",
+    "express": "^4.18.2",
+    "express-validator": "^6.15.0",
     "jsonwebtoken": "^9.0.0",
-    "express-validator": "^6.15.0"
+    "mongoose": "^7.0.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.1.11"
   },
-  "keywords": ["accounting", "api", "nodejs", "express"],
+  "keywords": [
+    "accounting",
+    "api",
+    "nodejs",
+    "express"
+  ],
   "author": "NextBook Cloud",
   "license": "MIT"
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -18,8 +18,20 @@ function AppContent() {
   const showSidebar = !noSidebarPages.includes(location.pathname);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
   const handleLogin = () => {
     setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
   };
 
   return (
@@ -31,10 +43,10 @@ function AppContent() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/accounts" element={<Accounts />} />
-          <Route path="/transactions" element={<Transactions />} />
-          <Route path="/reports" element={<Reports />} />
+          <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Login onLogin={handleLogin} />} />
+          <Route path="/accounts" element={isAuthenticated ? <Accounts /> : <Login onLogin={handleLogin} />} />
+          <Route path="/transactions" element={isAuthenticated ? <Transactions /> : <Login onLogin={handleLogin} />} />
+          <Route path="/reports" element={isAuthenticated ? <Reports /> : <Login onLogin={handleLogin} />} />
         </Routes>
       </main>
     </div>
