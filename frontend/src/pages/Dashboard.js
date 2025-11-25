@@ -30,12 +30,14 @@ const Dashboard = () => {
       });
       
       if (accountsResponse.ok) {
-        const accountsData = await accountsResponse.json();
+        const accountsResult = await accountsResponse.json();
+        const accountsData = accountsResult.data || accountsResult;
         setAccounts(Array.isArray(accountsData) ? accountsData : []);
       }
       
       if (transactionsResponse.ok) {
-        const transactionsData = await transactionsResponse.json();
+        const transactionsResult = await transactionsResponse.json();
+        const transactionsData = transactionsResult.data || transactionsResult;
         setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
       }
     } catch (error) {

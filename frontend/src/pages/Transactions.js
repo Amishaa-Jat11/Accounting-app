@@ -22,8 +22,9 @@ const Transactions = () => {
       });
       
       if (response.ok) {
-        const data = await response.json();
-        setTransactions(Array.isArray(data) ? data : []);
+        const result = await response.json();
+        const transactions = result.data || result;
+        setTransactions(Array.isArray(transactions) ? transactions : []);
       }
     } catch (error) {
       console.error('Error fetching transactions:', error);
@@ -35,15 +36,24 @@ const Transactions = () => {
   const fetchAccounts = async () => {
     try {
       const token = localStorage.getItem('token');
+      console.log('Token:', token ? 'exists' : 'missing');
+      
       const response = await fetch('http://localhost:5000/api/accounts', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       
+      console.log('Accounts response status:', response.status);
+      
       if (response.ok) {
-        const data = await response.json();
-        setAccounts(Array.isArray(data) ? data : []);
+        const result = await response.json();
+        console.log('Accounts fetched:', result);
+        const accounts = result.data || result;
+        setAccounts(Array.isArray(accounts) ? accounts : []);
+      } else {
+        const errorData = await response.text();
+        console.error('Failed to fetch accounts:', response.status, errorData);
       }
     } catch (error) {
       console.error('Error fetching accounts:', error);
@@ -425,10 +435,19 @@ const Transactions = () => {
                   required
                 >
                   <option value="">Select Account</option>
-                  {(Array.isArray(accounts) ? accounts : []).map(account => (
-                    <option key={account._id} value={account.name}>{account.name}</option>
-                  ))}
+                  {loading ? (
+                    <option disabled>Loading accounts...</option>
+                  ) : accounts.length === 0 ? (
+                    <option disabled>No accounts found - Create an account first</option>
+                  ) : (
+                    accounts.map(account => (
+                      <option key={account._id} value={account.name}>{account.name}</option>
+                    ))
+                  )}
                 </select>
+                {accounts.length === 0 && !loading && (
+                  <p className="text-sm text-red-500 mt-1">Please create an account first before adding transactions.</p>
+                )}
               </div>
               
               <div className="grid grid-cols-2 gap-4">

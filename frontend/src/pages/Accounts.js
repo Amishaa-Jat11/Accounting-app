@@ -24,8 +24,9 @@ const Accounts = () => {
       });
       
       if (response.ok) {
-        const data = await response.json();
-        setAccounts(Array.isArray(data) ? data : []);
+        const result = await response.json();
+        const accounts = result.data || result;
+        setAccounts(Array.isArray(accounts) ? accounts : []);
       }
     } catch (error) {
       console.error('Error fetching accounts:', error);
