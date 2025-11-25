@@ -6,6 +6,8 @@ const Reports = () => {
   const [accounts, setAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [generatedReports, setGeneratedReports] = useState([]);
+  const [generatingReport, setGeneratingReport] = useState(null);
 
   useEffect(() => {
     fetchReportsData();
@@ -25,18 +27,71 @@ const Reports = () => {
       ]);
       
       if (accountsResponse.ok) {
-        const accountsData = await accountsResponse.json();
+        const accountsResult = await accountsResponse.json();
+        const accountsData = accountsResult.data || accountsResult;
         setAccounts(Array.isArray(accountsData) ? accountsData : []);
       }
       
       if (transactionsResponse.ok) {
-        const transactionsData = await transactionsResponse.json();
+        const transactionsResult = await transactionsResponse.json();
+        const transactionsData = transactionsResult.data || transactionsResult;
         setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
       }
     } catch (error) {
       console.error('Error fetching reports data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generateReport = async (reportType) => {
+    setGeneratingReport(reportType);
+    try {
+      const token = localStorage.getItem('token');
+      let endpoint = '';
+      
+      switch(reportType) {
+        case 'Profit & Loss':
+          endpoint = '/api/reports/profit-loss';
+          break;
+        case 'Balance Sheet':
+          endpoint = '/api/reports/balance-sheet';
+          break;
+        case 'Cash Flow':
+          endpoint = '/api/reports/cash-flow';
+          break;
+        case 'Trial Balance':
+          endpoint = '/api/reports/trial-balance';
+          break;
+        default:
+          alert('Report type not implemented yet');
+          return;
+      }
+      
+      const response = await fetch(`http://localhost:5000${endpoint}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        const newReport = {
+          id: Date.now(),
+          name: `${reportType} - ${new Date().toLocaleDateString()}`,
+          type: reportType,
+          date: new Date().toISOString().split('T')[0],
+          size: '1.2 MB',
+          status: 'Ready',
+          data: result.data
+        };
+        
+        setGeneratedReports(prev => [newReport, ...prev]);
+        alert(`${reportType} report generated successfully!`);
+      }
+    } catch (error) {
+      console.error('Error generating report:', error);
+      alert('Failed to generate report');
+    } finally {
+      setGeneratingReport(null);
     }
   };
 
@@ -206,13 +261,17 @@ const Reports = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">{report.name}</h3>
-                    <p className="text-sm text-gray-500">{(Array.isArray(transactions) ? transactions.length : 0) > 0 ? 'Data available' : 'No data yet'}</p>
+                    <p className="text-sm text-gray-500">{(Array.isArray(transactions) ? transactions.length : 0) > 0 ? `${transactions.length} transactions` : 'No data yet'}</p>
                   </div>
                 </div>
                 <p className="text-gray-600 mb-6">{report.description}</p>
                 <div className="flex space-x-3">
-                  <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-all font-medium">
-                    Generate
+                  <button 
+                    onClick={() => generateReport(report.name)}
+                    disabled={generatingReport === report.name}
+                    className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-all font-medium disabled:opacity-50"
+                  >
+                    {generatingReport === report.name ? 'Generating...' : 'Generate'}
                   </button>
                 </div>
               </div>
@@ -236,7 +295,7 @@ const Reports = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {recentReports.length === 0 ? (
+              {generatedReports.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
                     <div className="text-6xl mb-4">📊</div>
@@ -245,7 +304,7 @@ const Reports = () => {
                   </td>
                 </tr>
               ) : (
-                recentReports.map((report, index) => (
+                generatedReports.map((report, index) => (
                   <tr key={report.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
@@ -276,11 +335,17 @@ const Reports = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center space-x-2">
-                        <button className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-md hover:bg-green-200 transition-colors font-medium">
-                          Download
+                        <button 
+                          onClick={() => alert('View functionality coming soon!')}
+                          className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-md hover:bg-green-200 transition-colors font-medium"
+                        >
+                          View
                         </button>
-                        <button className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200 transition-colors font-medium">
-                          Share
+                        <button 
+                          onClick={() => setGeneratedReports(prev => prev.filter(r => r.id !== report.id))}
+                          className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-md hover:bg-red-200 transition-colors font-medium"
+                        >
+                          Delete
                         </button>
                       </div>
                     </td>
